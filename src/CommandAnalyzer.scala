@@ -124,7 +124,7 @@ object CommandAnalyzer {
   // returns a list of all known words (from grammar and world)
   // note: does not include words with curly braces
   // should include object, direction, etc., but not {object}, {direction}, etc.
-  def getVocab: List[String] = (grammar.flatMap(_.split("\\W+").filterNot(_.startsWith("{"))) ++ world.map(_.desc.split("\\W+")).flatten).distinct
+  def getVocab: List[String] = (grammar.flatMap(_.split("\\W+").filterNot(_.startsWith("{"))) ++ world.map(_.desc.split("\\W+")).flatten).distinct.sorted
 
   // ==========================================================
   // command related function
@@ -147,7 +147,7 @@ object CommandAnalyzer {
   // Take "put {item} in {container}" as an example pattern. The first word in cmdWords must be "put". The following
   // word(s) must match the desc of an "item" kind GameObj based on wordsMatchGameObj function. The next word must be
   // "in". The ending word(s) must match the desc of a "container" kind GameObj based on wordsMatchGameObj function
-  def wordsMatchPattern(cmdWords: String, pattern: String): Boolean = {
+  //def wordsMatchPattern(cmdWords: String, pattern: String): Boolean = {
 
-  }
+  //}
 }
