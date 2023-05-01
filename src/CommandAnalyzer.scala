@@ -142,12 +142,25 @@ object CommandAnalyzer {
   // example: wordsMatchGameObj("small ball", GameObj("beach ball", "item")) ==> false
   def wordsMatchGameObj(words: String, gameObj: GameObj): Boolean = words.split("\\W+").forall(gameObj.desc.split("\\W+").contains)
 
-  // Not Ok
+  // Ok
   // return true if the words (cmdWords) match the specified grammar (pattern).
   // Take "put {item} in {container}" as an example pattern. The first word in cmdWords must be "put". The following
   // word(s) must match the desc of an "item" kind GameObj based on wordsMatchGameObj function. The next word must be
   // "in". The ending word(s) must match the desc of a "container" kind GameObj based on wordsMatchGameObj function
-  //def wordsMatchPattern(cmdWords: String, pattern: String): Boolean = {
-
-  //}
+  def wordsMatchPattern(cmdWords: String, pattern: String): Boolean = {
+    val patternRegex = pattern.replaceAll("\\{\\w+\\}", "(\\\\S+(?:\\\\s\\\\S+)*)")
+    val cmdRegex = s"^$patternRegex$$".r
+    val cmdWordsArr = cmdWords.split("\\W+")
+    cmdRegex.findFirstIn(cmdWords).exists { matchStr =>
+      val matchWordsArr = matchStr.split("\\W+")
+      (matchWordsArr zip cmdWordsArr).forall { case (matchWord, cmdWord) =>
+        if (matchWord.startsWith("{") && matchWord.endsWith("}")) {
+          val kind = matchWord.substring(1, matchWord.length - 1)
+          world.exists(obj => obj.kind == kind && cmdWord.split("\\s+").forall(word => obj.desc.contains(word)))
+        } else {
+          matchWord == cmdWord
+        }
+      }
+    }
+  }
 }
