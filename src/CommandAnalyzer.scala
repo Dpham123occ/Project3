@@ -65,6 +65,10 @@ object CommandAnalyzer {
   // example: cardboard, flimsy, very [ but not 'box' ]
   def getAdjectives: List[String] = world.flatMap(g => getWordList(g.desc).init).distinct.sorted
 
+  // returns a list of nouns (last words in desc) from world
+  // example: north, bed, man
+  def getNouns: List[String] = world.map(_.desc.split(" ").last).distinct.sorted
+
   //OK
   // returns a list of game-object kinds from world
   // example: direction, item, object
@@ -94,7 +98,7 @@ object CommandAnalyzer {
   // example: in, on, to
   def getPrepositions: List[String] = grammar.map(_.split("\\s+").tail.filterNot(word => word.startsWith("{") && word.endsWith("}")).mkString(" ")).filterNot(_.isEmpty).distinct.sorted
 
-  // OK la
+  // Ok
   // returns a list of all actions from grammar
   // actions are formed by combining the verb with its preposition (if any) with an underscore between them
   // example: look, examine, sit_on, put_in
