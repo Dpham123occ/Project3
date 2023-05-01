@@ -94,7 +94,7 @@ object CommandAnalyzer {
   // example: in, on, to
   def getPrepositions: List[String] = grammar.map(_.split("\\s+").tail.filterNot(word => word.startsWith("{") && word.endsWith("}")).mkString(" ")).filterNot(_.isEmpty).distinct.sorted
 
-  // OK
+  // OK la
   // returns a list of all actions from grammar
   // actions are formed by combining the verb with its preposition (if any) with an underscore between them
   // example: look, examine, sit_on, put_in
