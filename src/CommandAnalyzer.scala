@@ -65,12 +65,12 @@ object CommandAnalyzer {
   // example: cardboard, flimsy, very [ but not 'box' ]
   def getAdjectives: List[String] = world.flatMap(g => getWordList(g.desc).init).distinct.sorted
 
+  // OK
   // returns a list of nouns (last words in desc) from world
   // example: north, bed, man
   def getNouns: List[String] = world.map(_.desc.split(" ").last).distinct.sorted
 
-  //OK
-  // returns a list of game-object kinds from world
+  // OK
   // example: direction, item, object
   def getGameObjectKinds: List[String] = world.map(_.kind).distinct.sorted
 
@@ -104,7 +104,6 @@ object CommandAnalyzer {
   // example: look, examine, sit_on, put_in
   def getActions: List[String] = grammar.map(_.replaceAll("\\{.*?\\}", "").trim.replaceAll("\\s+", "_")).distinct.sorted
 
-
   // Ok
   // returns a list of game-object kinds from grammar
   // kinds are all the words in curly braces
@@ -117,7 +116,6 @@ object CommandAnalyzer {
   //   List("put {item} in {object}", "put {item} on {object}")
   def getGrammarStrings(verb: String): List[String] = grammar.filter(_.startsWith(verb)).distinct
 
-
   // ==========================================================
   // getVocab function
   // ==========================================================
@@ -128,7 +126,6 @@ object CommandAnalyzer {
   // should include object, direction, etc., but not {object}, {direction}, etc.
   def getVocab: List[String] = (grammar.flatMap(_.split("\\W+").filterNot(_.startsWith("{"))) ++ world.map(_.desc.split("\\W+")).flatten).distinct
 
-
   // ==========================================================
   // command related function
   // ==========================================================
@@ -137,36 +134,20 @@ object CommandAnalyzer {
   // return true if the words contain a preposition
   def hasPrep(words: String): Boolean = words.split("\\W+").exists(CommandAnalyzer.getPrepositions.contains)
 
-
-  // OK?
+  // OK
   // return true if the words match the specified game object
   // for a string of words to match a game object, all the words in the string
   // must be words contained in the description of the game object
   // example: wordsMatchGameObj("tree tree", GameObj("small tree frog", "item")) ==> true
-  // example: wordsMatchGameObj("small ball", small ball) ==> false
+  // example: wordsMatchGameObj("small ball", GameObj("beach ball", "item")) ==> false
   def wordsMatchGameObj(words: String, gameObj: GameObj): Boolean = words.split("\\W+").forall(gameObj.desc.split("\\W+").contains)
 
-
+  // Not Ok
   // return true if the words (cmdWords) match the specified grammar (pattern).
   // Take "put {item} in {container}" as an example pattern. The first word in cmdWords must be "put". The following
   // word(s) must match the desc of an "item" kind GameObj based on wordsMatchGameObj function. The next word must be
   // "in". The ending word(s) must match the desc of a "container" kind GameObj based on wordsMatchGameObj function
   def wordsMatchPattern(cmdWords: String, pattern: String): Boolean = {
-    val cmdWordList = getWordList(cmdWords)
-    val patternWordList = getWordList(pattern)
 
-    if (cmdWordList.length != patternWordList.length) {
-      false
-    } else {
-      cmdWordList.zip(patternWordList).forall {
-        case (cmdWord, patternWord) if patternWord.startsWith("{") =>
-          val kind = patternWord.stripPrefix("{").stripSuffix("}")
-          val gameObjs = world.filter(_.kind == kind)
-          gameObjs.exists(wordsMatchGameObj(cmdWord, _))
-
-        case (cmdWord, patternWord) =>
-          cmdWord == patternWord
-      }
-    }
   }
 }
